@@ -17,6 +17,14 @@ def get_frameworks():
 
     return jsonify(frameworks)
 
+@app.route("/api/frameworks/<string:name>")#variables en flask un empoint
+def get_framework_by_name(name):
+    framework = []
+    for f in frameworks:
+        if f["name"] == name:
+            framework.append(f)
+    return jsonify(framework)
+
 if __name__ == "__main__":
     app.run(debug = True) #en flask podemos activar el modo debug
     #el cual nos ayuda editar los archivos que pertenecen a nuestra aplicacion
