@@ -23,7 +23,11 @@ def get_framework_by_name(name):
     for f in frameworks:
         if f["name"] == name:
             framework.append(f)
-    return jsonify(framework)
+    return jsonify(framework[0])
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug = True) #en flask podemos activar el modo debug
