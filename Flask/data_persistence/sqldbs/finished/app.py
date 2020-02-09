@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask , request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 import os
@@ -13,12 +13,26 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] =False
 db = SQLAlchemy(app) 
 
 class Framework(db.Model):
+    __tablename__ = "frameworks" # solo por cuestiones de semanticas para llamarle a la tabla framewors ya que antes se llamaba framework
     id = db.Column(db.Integer, primary_key = True)
     #name = db.Colum(db.String(50), nullable = False , unique = True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(300))
     
 
 @app.route("/")
 def index():
     return "Hello World! dbs"
 
+#construir nuestra rest de api
+@app.route("/api/frameworks/", methods=["POST"])
+def add_framework():
+    new_framework = Framework(name=request.json["name"])
+    db.session.add(new_framework)
+    db.session.commit()
+
+    framework_dict = {
+        "id": new_framework.id,
+        "name": new_framework.name
+    }
+    #return jsonify(new_framework)# jsonify no puede convertir objetos a formato json
+    return jsonify(framework_dict)
