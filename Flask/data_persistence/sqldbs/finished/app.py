@@ -37,6 +37,14 @@ def get_one_framework_by_name(name):
 
     return jsonify(result)
 
+@app.route("/api/frameworks/")
+def get_all_frameworks():
+    frameworks = Framework.query.all()
+    framework_schema = FrameworkSchema(many = True)
+    result = framework_schema.dump(frameworks)
+
+    return jsonify(result)
+
 #construir nuestra rest de api
 @app.route("/api/frameworks/", methods=["POST"])
 def add_framework():
