@@ -36,3 +36,29 @@ def add_framework():
     }
     #return jsonify(new_framework)# jsonify no puede convertir objetos a formato json
     return jsonify(framework_dict)
+
+@app.route("/api/frameworks/<int:id>", methods = ["PUT"])
+def edit_framework(id):
+    framework = Framework.query.filter_by(id=id).first() # consuta donde especificamos un filtro
+    framework.name = request.json["name"]
+
+    db.session.commit()
+
+    framework_dict = dict(id = framework.id, name = framework.name)
+    # otra forma de hacer diccionario en python
+    # equivale a 
+    # framework_dict = {
+    #     "id": new_framework.id,
+    #     "name": new_framework.name
+    # }
+    return jsonify(framework_dict)
+
+
+@app.route("/api/frameworks/<int:id>", methods = ["DELETE"])
+def delete_framework(id):
+    framework = Framework.query.get(id) # consulta solo funciona para el id
+    db.session.delete(framework)
+    db.session.commit()
+
+    return jsonify({"message":"ok"})
+
