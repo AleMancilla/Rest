@@ -1,5 +1,7 @@
 from flask import Flask , request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from marshmallow import Schema, fields 
+# marshmellow nos ayudara 
 
 import os
 
@@ -17,11 +19,23 @@ class Framework(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     #name = db.Colum(db.String(50), nullable = False , unique = True)
     name = db.Column(db.String(300))
-    
+
+# serializar un objeto de alto nivel a bajo nivel como diccionario
+class FrameworkSchema(Schema):
+    id = fields.Int()
+    name = fields.Str()
 
 @app.route("/")
 def index():
     return "Hello World! dbs"
+
+@app.route("/api/frameworks/<string:name>", methods = ["GET"])
+def get_one_framework_by_name(name):
+    framework = Framework.query.filter_by(name=name).first()
+    framework_schema = FrameworkSchema()
+    result = framework_schema.dump(framework)# pasamos el objeto que queremos serializar
+
+    return jsonify(result)
 
 #construir nuestra rest de api
 @app.route("/api/frameworks/", methods=["POST"])
@@ -61,4 +75,7 @@ def delete_framework(id):
     db.session.commit()
 
     return jsonify({"message":"ok"})
+
+
+
 
