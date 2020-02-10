@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_mongoalchemy import MongoAlchemy
+from marshmallow import Schema, fields
 
 app = Flask(__name__)
 #establecemos la coneccion con la base de datos
@@ -11,7 +12,9 @@ class Framework(db.Document):
     #id es tan importante que ya esta implicito por defecto
     name = db.StringField()
 
-#establecemos la coneccion con la base de datos
+class FrameworkSchema(Schema):
+    id = fields.Str(attribute = "mongo_id") # mongo_id asi se espera ese atributo y se asigna a id
+    name = fields.Str()
 
 
 @app.route("/")
@@ -26,7 +29,9 @@ def get_frameworks():
 
 @app.route("/api/frameworks/<string:name>", methods = ["GET"])
 def get_frameworks_by_name(name):
-
+    framework = Framework.query.filter(Framework.name == name).first()
+    framework_schema = FrameworkSchema()
+    results = framework_schema.dump(framework)
     return jsonify(results)
 
 
@@ -57,3 +62,11 @@ def edit_framework(id):
     }
 
     return jsonify(framework_dic)
+
+# DELETE METHOD
+@app.route("/api/frameworks/<string:id>", methods = ["DELETE"])
+def delete_framework(id):
+    framework = Framework.query.get(id)
+    framework.remove()
+
+    return jsonify({"Message":"ok"})
