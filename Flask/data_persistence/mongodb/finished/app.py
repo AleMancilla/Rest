@@ -24,6 +24,9 @@ def index():
 # GET METHOD
 @app.route("/api/frameworks/", methods=["GET"])
 def get_frameworks():
+    frameworks = Framework.query.all()
+    frameworks_schema = FrameworkSchema(many = True)
+    results = frameworks_schema.dump(frameworks)
 
     return jsonify(results)
 
